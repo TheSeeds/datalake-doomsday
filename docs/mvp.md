@@ -138,14 +138,26 @@ O dashboard inicial deve mostrar:
 - status de ingestão
 - últimas entradas
 
-### 6. Segurança e sandbox
+### 6. Segurança, criptografia e sandbox
 
 Toda a execução do MVP deve respeitar a política do projeto, inclusive:
 
 - uso de ai-jail para atividade de IA e processamento
 - acesso mínimo e por projeto
 - dados sensíveis não expostos por padrão
+- criptografia em trânsito e em repouso
+- uso de chaves e segredos fora do código-fonte
 - revisão humana antes de ações críticas
+
+## Regras de criptografia no MVP
+
+O MVP deve considerar criptografia como parte do desenho do sistema desde o primeiro passo.
+
+- TLS para todas as comunicações entre serviços
+- cifragem do storage bruto, quando houver dados sensíveis
+- cifragem de volumes e backups do banco e da infraestrutura
+- logs e arquivos temporários sem conteúdo sensível em texto puro
+- políticas de chaves e gestão de segredos documentadas
 
 ## Fluxo operacional do MVP
 

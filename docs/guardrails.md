@@ -23,6 +23,29 @@ Este projeto é 100% software livre e open source. Portanto, todo desenvolviment
 - separar ambiente de desenvolvimento, teste e produção
 - proteger acessos a redes internas, APIs e repositórios externos
 - não misturar dados sensíveis com dados de prototipagem
+- tratar criptografia como requisito obrigatório, não como opcional
+
+## Criptografia
+
+A criptografia deve ser tratada como requisito de arquitetura e não como camada acessória.
+
+### Regras mínimas
+
+- todo tráfego entre serviços deve usar TLS 1.2 ou superior
+- todo dado em repouso deve ser cifrado em disco ou em storage
+- qualquer armazenamento de dados sensíveis deve usar criptografia forte, preferencialmente AES-256
+- backups e snapshots também devem ser cifrados
+- chaves e segredos devem ser gerenciados fora do código-fonte e fora de logs
+- nenhum dado sensível deve ficar em texto puro em arquivos temporários, dumps ou logs
+- qualquer integração com serviços externos deve exigir autenticação e cifragem no transporte
+
+### Política do projeto
+
+- dados sensíveis devem ter classificação clara e política de retenção
+- acesso a dados cifrados deve exigir autorização explícita
+- a rotação de chaves deve ser planejada e documentada
+- a infraestrutura deve priorizar soluções com cifragem por padrão
+- se uma funcionalidade exigir acesso a dados protegidos, a solução precisa documentar como a criptografia será preservada
 
 ## Isolamento e sandbox
 
