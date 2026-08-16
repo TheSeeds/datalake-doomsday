@@ -46,14 +46,16 @@ Use o checklist abaixo para marcar o que já foi concluído e o que ainda está 
 - [x] documentação da política de software livre e open source
 - [x] criação da política de uso do ai-jail
 - [x] criação do plano de execução versionado
-- [ ] definição da arquitetura técnica do lake
-- [ ] definição da stack open source inicial
+- [x] decisão do modelo de infraestrutura em 3 VMs
+- [x] definição da arquitetura técnica do lake em camadas
+- [x] definição da stack inicial recomendada
 - [ ] protótipo de ingestão mínima
-- [ ] protótipo de armazenamento bruto
-- [ ] protótipo de metadados e catálogo
-- [ ] protótipo de consulta leve
-- [ ] primeira visão de dashboards
-- [ ] integração de IA com base de conhecimento
+- [ ] protótipo de armazenamento bruto em MinIO
+- [ ] protótipo de metadados e catálogo em PostgreSQL
+- [ ] protótipo de consulta leve em DuckDB
+- [ ] dashboard mínimo de métricas
+- [ ] integração segura de IA com sandbox
+- [ ] revisão do MVP e documentação de operação
 
 ## Escopo inicial
 
@@ -95,6 +97,7 @@ Concluído.
 - decidir como a ingestão deve acontecer
 - estabelecer regras para organização por categoria e origem
 - decidir a estratégia inicial de custo e armazenamento
+- fixar o padrão de 3 VMs como referência operacional
 
 ### Entregáveis esperados
 
@@ -102,10 +105,11 @@ Concluído.
 - política de ingestão
 - regras de catalogação
 - níveis de armazenamento: bruto, quente, frio e archive
+- desenho da distribuição de responsabilidades por VM
 
 ### Status
 
-Pendente.
+Concluído em parte, com modelo de infraestrutura definido.
 
 ## Fase 3: protótipo funcional mínimo
 
@@ -202,16 +206,32 @@ Cada nova mudança deve ser adicionada ao plano em formato de registro, com:
 - consolidação da documentação base
 - definição das guardrails e sandbox para IA
 - criação do checklist de execução e definição de status
+- definição do modelo de infraestrutura em 3 VMs
+- definição da arquitetura técnica do lake em camadas
+- escolha da stack inicial recomendada
+- atualização do plano para refletir a fase de implementação do MVP
 
-## Próxima ação prioritária
+## Próximas ações prioritárias
 
-Definir a arquitetura técnica inicial do lake, incluindo:
+A sequência imediata do projeto é esta:
 
-- camada de ingestão
-- camada de armazenamento bruto
-- camada de metadados e catálogo
-- camada de consulta leve
-- primeira estratégia de sandbox e acesso
+1. criar a estrutura inicial do repositório para o MVP
+2. preparar o ambiente de infraestrutura em 3 VMs
+3. instalar e configurar MinIO na VM 1
+4. preparar o banco PostgreSQL na VM 1 com schema de metadados
+5. criar a ingestão mínima em Python na VM 2
+6. integrar leitura básica com DuckDB na VM 2
+7. criar dashboard simples de métricas na VM 2
+8. validar a execução da IA e processamento em sandbox na VM 3
+9. revisar o MVP e documentar o fluxo operacional
+10. registrar tudo em documentação versionada e manter o plano atualizado
+
+## Memória operacional imediata
+
+- prioridade atual: transformar a arquitetura em implementação prática
+- objetivo do próximo ciclo: montar o MVP funcional de ingestão, armazenamento e catálogo
+- padrão adotado: 3 VMs separadas por função
+- regra: não avançar para IA antes da base funcional do lake estar validada
 
 ## Convenção de status
 
