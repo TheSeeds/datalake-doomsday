@@ -6,6 +6,20 @@ O projeto datalake-doomsday é uma proposta de data lake resiliente, de baixo cu
 
 A ideia central é construir uma base de memória digital que possa sobreviver a limitações técnicas, falhas locais e restrições de recursos, mantendo o valor do dado mesmo quando a infraestrutura é simples ou degradada.
 
+## Compromisso de software livre
+
+Este projeto é 100% software livre e open source em sua essência.
+
+Todos os componentes, módulos, scripts, documentação e padrões de desenvolvimento devem priorizar:
+
+- código aberto
+- transparência
+- reuso comunitário
+- ausência de lock-in de fornecedor
+- compatibilidade com infraestrutura livre e acessível
+
+O objetivo é manter o ecossistema sustentável, auditável e reutilizável por qualquer pessoa que queira prototipar, adaptar ou evoluir a ideia.
+
 ## Objetivo
 
 O projeto busca criar uma estrutura para:

@@ -4,6 +4,18 @@
 
 A arquitetura do datalake-doomsday deve seguir um modelo em camadas, separando armazenamento, catálogo, consulta e conhecimento.
 
+## Compromisso de arquitetura aberta
+
+A arquitetura deste projeto deve ser 100% compatível com software livre e open source.
+
+Isso significa:
+
+- evitar dependências proprietárias onde não for necessário
+- priorizar ferramentas com licença aberta
+- manter módulos reutilizáveis e auditáveis
+- garantir que a solução possa ser reproduzida em ambientes livres
+- favorecer interoperabilidade e transparência técnica
+
 ## Camadas propostas
 
 ### 1. Ingestão
