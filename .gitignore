@@ -1,0 +1,44 @@
+# Vagrant / VM local
+.vagrant/
+.vagrant.d/
+.vagrant/**
+*.box
+*.log
+
+# Libvirt / QEMU generated artifacts
+*.qcow2
+*.img
+*.raw
+
+# Local runtime files
+.vagrant/machines/
+.vagrant/tmp/
+
+# Secrets / local env
+.env
+.env.*
+*.pem
+*.key
+*.crt
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Temporary artifacts
+*.tmp
+*.bak
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Node
+node_modules/
+
+# Builds
+build/
+dist/
+coverage/

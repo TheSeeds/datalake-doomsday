@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  app:
+    image: python:3.12-slim
+    container_name: app-query
+    working_dir: /app
+    volumes:
+      - ../../../src:/app
+    command: bash -lc "python -m http.server 8000"
+    ports:
+      - "8000:8000"
+
+  duckdb:
+    image: ghcr.io/duckdb/duckdb:latest
+    container_name: duckdb-query
+    entrypoint: ["sh", "-lc", "echo 'DuckDB runtime placeholder' && sleep infinity"]

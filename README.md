@@ -1,5 +1,18 @@
 # datalake-doomsday
 
+## Status do ambiente
+
+Este repositório representa um ambiente de validação local, protótipo e laboratório de arquitetura.
+
+Ele não é um ambiente de produção.
+
+Todos os serviços, VMs, parâmetros e fluxos aqui documentados devem ser entendidos como:
+
+- ambiente de teste
+- ambiente de validação de MVP
+- ambiente controlado para desenvolvimento e experimentação
+- infraestrutura local sem compromisso de disponibilidade, operação crítica ou segurança de produção
+
 ## Visão geral
 
 O projeto datalake-doomsday é uma proposta de data lake resiliente, de baixo custo e modular, pensado para preservar e organizar tudo que puder ser capturado em ambientes com infraestrutura mínima, pouca sofisticação operacional e necessidade de continuidade.

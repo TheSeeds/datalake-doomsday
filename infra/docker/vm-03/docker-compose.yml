@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  ai-jail:
+    image: alpine:3.20
+    container_name: ai-jail-sandbox
+    privileged: false
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    entrypoint: ["sh", "-lc", "echo 'Sandbox ready'; sleep infinity"]
