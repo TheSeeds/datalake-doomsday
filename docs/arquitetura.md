@@ -233,18 +233,19 @@ O padrão arquitetural do projeto será a separação em 3 máquinas virtuais, c
 
 ```mermaid
 flowchart TB
-    subgraph VM1[VM 1 - Dados e catálogo]
+    subgraph VM1[VM-01 - data-core]
         A1[MinIO]
         A2[PostgreSQL]
+        A3[Backups e criptografia]
     end
 
-    subgraph VM2[VM 2 - Aplicação e consulta]
+    subgraph VM2[VM-02 - app-query]
         B1[Python]
         B2[DuckDB]
         B3[Dashboard]
     end
 
-    subgraph VM3[VM 3 - Sandbox e IA]
+    subgraph VM3[VM-03 - ai-sandbox]
         C1[ai-jail]
         C2[Extração de texto]
         C3[Processamento IA]
@@ -253,28 +254,33 @@ flowchart TB
     B1 --> A1
     B1 --> A2
     B2 --> A2
+    A3 --> A1
     C1 --> A2
     C2 --> A2
     C3 --> A2
 ```
 
-### VM 1 - armazenamento e catálogo
+### VM-01 - data-core
 
 - MinIO
 - PostgreSQL
+- backups cifrados
+- gestão de chaves e segredos
 - função: preservar o dado bruto e manter o catálogo de metadados
 
-### VM 2 - aplicação e consulta
+### VM-02 - app-query
 
 - Python
 - DuckDB
 - dashboard básico
+- ingestão e consulta leve
 - função: receber arquivos, processar metadados e consultar dados de forma leve
 
-### VM 3 - sandbox e IA
+### VM-03 - ai-sandbox
 
 - ai-jail
 - atividades de extração de texto e processamento inteligente
+- rede isolada e acesso mínimo
 - função: manter a execução segura, isolada e com acesso controlado
 
 Essa estrutura evita misturar responsabilidades e reduz risco de falha operacional, além de manter a arquitetura alinhada com as práticas de segurança do projeto.

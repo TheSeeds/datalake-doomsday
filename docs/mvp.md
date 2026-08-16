@@ -265,29 +265,44 @@ Este modelo foi escolhido como padrão para manter a arquitetura clara, segregad
 
 O projeto deve seguir, como modelo mestre, a separação abaixo:
 
-### VM 1 - dados e catálogo
+### VM-01 - data-core
 
+Nome de referência: data-core
+
+- Sistema operacional: Ubuntu Server 22.04 LTS
 - CPU: 4 vCPUs
 - RAM: 12 a 16 GB
 - disco: 200 GB SSD
-- serviços: MinIO, PostgreSQL
+- serviços: MinIO, PostgreSQL, backups, TLS, gestão de chaves
 - função: preservar o dado bruto e manter o catálogo de metadados
+- rede: rede privada do projeto, acesso restrito e sem exposição pública
+- portas principais: 9000/9001 (MinIO), 5432 (PostgreSQL)
 
-### VM 2 - aplicação e consultas
+### VM-02 - app-query
 
+Nome de referência: app-query
+
+- Sistema operacional: Ubuntu Server 22.04 LTS
 - CPU: 4 vCPUs
 - RAM: 8 a 12 GB
 - disco: 100 GB SSD
-- serviços: Python, DuckDB, dashboard
+- serviços: Python, DuckDB, dashboard, ingestão, APIs locais e consultas
 - função: receber arquivos, processar metadados e permitir consultas simples
+- rede: acesso restrito à VM-01 e ao ambiente de operação
+- portas principais: 8000/8080 para interface e serviços locais
 
-### VM 3 - sandbox e IA
+### VM-03 - ai-sandbox
 
+Nome de referência: ai-sandbox
+
+- Sistema operacional: Ubuntu Server 22.04 LTS
 - CPU: 2 a 4 vCPUs
 - RAM: 8 a 16 GB
 - disco: 100 GB SSD
-- serviços: ai-jail, processadores de IA, extração de texto e tarefas protegidas
+- serviços: ai-jail, processadores de IA, extração de texto, tarefas protegidas
 - função: isolar a execução de IA e limitar riscos de acesso indevido
+- rede: isolada, sem rede pública, sem acesso ao host principal e sem acesso irrestrito a segredos
+- portas principais: apenas portas internas, conforme necessário para processamento controlado
 
 Este é o modelo a ser seguido como referência arquitetural do projeto.
 
