@@ -2,14 +2,18 @@ services:
   app:
     image: python:3.12-slim
     container_name: app-query
-    working_dir: /app
+    restart: unless-stopped
+    working_dir: /workspace
     volumes:
-      - ../../../src:/app
-    command: bash -lc "python -m http.server 8000"
+      - ../../../:/workspace
+    environment:
+      PYTHONUNBUFFERED: "1"
+    command: bash -lc "python -m http.server 8000 --directory /workspace"
     ports:
       - "8000:8000"
 
   duckdb:
-    image: ghcr.io/duckdb/duckdb:latest
+    image: duckdb/duckdb:latest
     container_name: duckdb-query
-    entrypoint: ["sh", "-lc", "echo 'DuckDB runtime placeholder' && sleep infinity"]
+    restart: unless-stopped
+    entrypoint: ["sh", "-lc", "echo 'DuckDB runtime ready'; sleep infinity"]

@@ -130,6 +130,8 @@ Este comando:
 1. sobe as VMs com Vagrant + libvirt
 2. provisiona o ambiente base sem depender de NFS do host
 3. inicia o stack da VM-01 com MinIO e PostgreSQL
+4. inicia o stack da VM-02 com app/query e DuckDB
+5. inicia o sandbox da VM-03 em modo ai-jail
 
 A opção `VAGRANT_DISABLE_NFS=1` foi usada para evitar o prompt de sudo do host ao limpar exports NFS do Vagrant, que quebrava a automatização do laboratório local.
 

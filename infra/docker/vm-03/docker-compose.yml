@@ -2,8 +2,14 @@ services:
   ai-jail:
     image: alpine:3.20
     container_name: ai-jail-sandbox
+    restart: unless-stopped
     privileged: false
     read_only: true
+    cap_drop:
+      - ALL
     security_opt:
       - no-new-privileges:true
-    entrypoint: ["sh", "-lc", "echo 'Sandbox ready'; sleep infinity"]
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=64m
+    network_mode: none
+    entrypoint: ["sh", "-lc", "echo 'Sandbox ready'; while true; do sleep 60; done"]
