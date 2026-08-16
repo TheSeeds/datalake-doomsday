@@ -115,6 +115,26 @@ A validação automatizada cobre:
 
 O workflow principal está em [.github/workflows/ci.yml](.github/workflows/ci.yml).
 
+## Estado validado do laboratório
+
+A arquitetura que foi validada e ficou estável no laboratório local foi a seguinte:
+
+- VM-01: dados e catálogo
+  - MinIO para armazenamento bruto
+  - PostgreSQL para metadados
+
+- VM-02: aplicativo e consulta
+  - serviço Python de consulta
+  - endpoint HTTP para receber a pergunta
+  - integração com a IA local
+
+- VM-03: sandbox de IA local
+  - serviço mínimo compatível com OpenAI
+  - endpoint /v1/models e /v1/chat/completions
+  - fallback local em Python para manter um fluxo estável e reproduzível
+
+Essa foi a linha de base que realmente funcionou em ambiente local, após ajustes de compatibilidade e de runtime.
+
 ## Fluxo operacional do laboratório
 
 Este ambiente foi pensado para subir e destruir com comandos simples, sem depender de dezenas de etapas manuais.
@@ -135,15 +155,15 @@ Este comando:
 
 A opção `VAGRANT_DISABLE_NFS=1` foi usada para evitar o prompt de sudo do host ao limpar exports NFS do Vagrant, que quebrava a automatização do laboratório local.
 
-A VM-03 também foi preparada para um serviço mínimo de IA com vLLM. O objetivo é testar o fluxo da cadeia local com uma arquitetura pequena e legível, usando um modelo de consulta leve em vez de uma stack pesada.
+A VM-03 foi configurada como uma API mínima compatível com OpenAI, em vez de manter uma stack pesada de vLLM em produção local. O objetivo foi validar o fluxo real da cadeia local com uma arquitetura pequena, legível e estável.
 
-O endpoint esperado do modelo é:
+O endpoint funcional do laboratório é:
 
 ```text
 http://192.168.56.12:8000/v1
 ```
 
-Este serviço depende de acesso local à GPU do host e serve como prova de conceito para consulta local no laboratório.
+Esse endpoint expõe um modelo de consulta mínimo e responde em formato compatível com chamadas do tipo chat completion.
 
 ### Validar infraestrutura
 
@@ -211,3 +231,6 @@ Este modelo mantém o ambiente seguro, rápido e útil para evolução controlad
 - o objetivo é acelerar validação, não operar produção
 - qualquer destruição deve ser intencional e explícita
 - os comandos de provisionamento e destruição devem ser reproduzíveis e simples
+- não versionar segredos, tokens, chaves privadas, certificados nem dados sensíveis reais
+- manter valores de laboratório em placeholders ou em variáveis de ambiente locais fora do repositório
+- usar apenas redes e endpoints de laboratório em ambiente controlado
