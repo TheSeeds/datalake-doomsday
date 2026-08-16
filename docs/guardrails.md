@@ -68,6 +68,69 @@ Regras:
 - não permitir que a IA acesse dados fora do sandbox definido
 - separar experimentação de produção
 
+## Sandbox de execução para IA: ai-jail
+
+Para reforçar a proteção da execução de agentes de IA, este projeto usará a ferramenta ai-jail como camada de sandbox do sistema operacional.
+
+A responsabilidade do ai-jail não é substituir a arquitetura de segurança do projeto, mas complementar a defesa do ambiente em que a IA opera.
+
+### O que compete a esta ferramenta
+
+O ai-jail é responsável por limitar o que o agente de IA pode acessar durante a execução. Em prática, ele cuida de:
+
+- isolar o processo em um ambiente controlado
+- limitar acesso ao sistema de arquivos do host
+- impedir leitura ou escrita indiscriminada em diretórios fora do escopo
+- não montar automaticamente o ambiente completo do usuário
+- suprimir acesso a credenciais e secrets por padrão
+- bloquear capacidades sensíveis como rede, GPU, display, SSH, Docker e IPC do host por padrão
+- reduzir o risco de fuga de dados e execução não autorizada
+
+Em outras palavras, o ai-jail cobre a parte de execução segura do agente de IA: sandbox, isolamento, perfil de acesso e contenção do ambiente.
+
+### O que não compete a esta ferramenta
+
+O ai-jail não substitui:
+
+- governança do dado
+- políticas de retenção e descarte
+- separação entre ambiente de desenvolvimento e produção
+- revisão humana de mudanças importantes
+- catalogação e metadados do lake
+- regras internas de acesso ao projeto
+
+Essas responsabilidades continuam sendo do projeto e da arquitetura do datalake-doomsday.
+
+### Como vamos usar
+
+A ferramenta será usada em todos os cenários em que uma IA for autorizada a operar em código, arquivos ou protótipos do projeto.
+
+Padrão recomendado:
+
+- rodar a IA em sandbox por projeto
+- mapear apenas o diretório do repositório ou do sandbox relevante
+- manter a rede desligada por padrão
+- manter credenciais e ambiente do sistema host fora do sandbox
+- mascarar ou negar caminhos sensíveis e arquivos secretos
+- usar acesso somente leitura para áreas de referência
+- permitir escrita somente no escopo do projeto ativo
+- validar manualmente qualquer alteração relevante antes de aceitar
+
+### Política de uso no projeto
+
+O uso do ai-jail será obrigatório para:
+
+- qualquer agente de IA executando comandos dentro do repositório
+- qualquer execução que manipule arquivos de projeto
+- qualquer tarefa que possa criar, editar ou remover conteúdo sensível
+- qualquer protótipo em sandbox ou ambiente de teste
+
+O uso do ai-jail será opcional apenas para leitura passiva e análise documental em ambiente estritamente controlado, quando o escopo for conhecido e a segurança estiver explicitamente validada.
+
+### Regra prática
+
+A IA pode operar, mas só em um ambiente controlado e limitado. O ai-jail é a camada de contenção da execução; o projeto continua sendo responsável pela arquitetura, governança e decisões humanas.
+
 ## Qualidade e validação
 
 - qualquer nova funcionalidade deve ter validação mínima
