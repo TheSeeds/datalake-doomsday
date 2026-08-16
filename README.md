@@ -99,3 +99,44 @@ O datalake-doomsday é um data lake de baixo custo, resiliente e modular para pr
 - infra/: infraestrutura e provisionamento
 - sandbox/: ambiente isolado para prototipagem
 - examples/: exemplos e experimentos
+- .github/workflows/: validações automáticas do laboratório e da infraestrutura
+
+## Validação automatizada do laboratório
+
+O projeto inclui uma pipeline no GitHub Actions para validar a integridade do ambiente local de teste.
+
+A validação automatizada cobre:
+
+- sintaxe do Vagrantfile
+- sintaxe dos scripts bash de provisionamento
+- validação dos arquivos Docker Compose
+- consistência dos arquivos essenciais do laboratório
+- checagem simples de guardrails e postura do projeto
+
+O workflow principal está em [.github/workflows/ci.yml](.github/workflows/ci.yml).
+
+### Como testar localmente
+
+No repositório, execute:
+
+```bash
+cd /home/cflb/Projetos/TheSeed/datalake-doomsday
+ruby -c tests/vms/Vagrantfile
+bash -n infra/provision/install-docker.sh
+bash -n infra/provision/bootstrap-vm.sh
+docker compose -f infra/docker/vm-01/docker-compose.yml config >/dev/null
+docker compose -f infra/docker/vm-02/docker-compose.yml config >/dev/null
+docker compose -f infra/docker/vm-03/docker-compose.yml config >/dev/null
+```
+
+### Como funciona a pipeline
+
+A pipeline segue uma lógica simples:
+
+1. valida a estrutura do laboratório
+2. valida sintaxe e composição do código de infra
+3. garante que os arquivos essenciais existam
+4. confirma que o projeto mantém o modelo de laboratório local
+5. em execução manual em runner self-hosted, também sobe a VM-01 e valida o Docker dentro dela
+
+Este modelo mantém o ambiente seguro, rápido e útil para evolução controlada do projeto, sem transformar o GitHub Actions em um ambiente de produção.

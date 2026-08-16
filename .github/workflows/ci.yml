@@ -1,0 +1,83 @@
+name: TheSeed Lab CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  static-validation:
+    name: Static validation of the local lab
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate Vagrantfile syntax
+        run: ruby -c tests/vms/Vagrantfile
+
+      - name: Validate shell scripts
+        run: |
+          bash -n infra/provision/install-docker.sh
+          bash -n infra/provision/bootstrap-vm.sh
+
+      - name: Validate Docker Compose files
+        run: |
+          docker compose -f infra/docker/vm-01/docker-compose.yml config >/dev/null
+          docker compose -f infra/docker/vm-02/docker-compose.yml config >/dev/null
+          docker compose -f infra/docker/vm-03/docker-compose.yml config >/dev/null
+
+      - name: Verify required files exist
+        run: |
+          test -f tests/vms/Vagrantfile
+          test -f tests/vms/README.md
+          test -f infra/README.md
+          test -f infra/provision/install-docker.sh
+          test -f infra/provision/bootstrap-vm.sh
+          test -f .gitignore
+
+      - name: Sanity check project guardrails
+        run: |
+          grep -q "ambiente de teste" README.md || grep -q "teste" README.md
+          grep -q "laboratório" infra/README.md || grep -q "testbed" infra/README.md
+
+  self-hosted-vm-check:
+    name: Manual VM lab validation
+    if: github.event_name == 'workflow_dispatch'
+    needs: static-validation
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate Vagrant environment
+        working-directory: tests/vms
+        run: |
+          vagrant validate
+
+      - name: Bring up the first VM
+        working-directory: tests/vms
+        run: |
+          vagrant up vm-01-data-core --provider=libvirt --no-destroy-on-error
+
+      - name: Validate Docker inside the VM
+        working-directory: tests/vms
+        run: |
+          vagrant ssh vm-01-data-core -c 'sudo docker --version'
+          vagrant ssh vm-01-data-core -c 'sudo docker compose version'
+          vagrant ssh vm-01-data-core -c 'sudo docker run --rm hello-world'
+
+      - name: Validate the project compose stack
+        working-directory: tests/vms
+        run: |
+          vagrant ssh vm-01-data-core -c 'sudo docker compose -f /vagrant/infra/docker/vm-01/docker-compose.yml config >/dev/null'
+
+      - name: Shutdown the test VM
+        if: always()
+        working-directory: tests/vms
+        run: |
+          vagrant halt vm-01-data-core || true
