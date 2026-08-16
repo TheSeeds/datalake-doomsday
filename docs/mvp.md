@@ -230,15 +230,54 @@ Após o MVP concluído, o projeto pode evoluir para:
 
 ## Decisão de arquitetura para o MVP
 
-A arquitetura escolhida para o MVP é:
+A arquitetura escolhida para o projeto segue o modelo de 3 máquinas virtuais, como padrão de referência:
 
-- MinIO para armazenamento bruto
-- PostgreSQL para metadados e catálogo
-- DuckDB para consulta leve
-- Python para ingestão e orchestration
-- Docker Compose para execução local
+- VM 1: armazenamento e catálogo
+  - MinIO para armazenamento bruto
+  - PostgreSQL para metadados e catálogo
+  - foco em persistência, rastreio e organização
+- VM 2: aplicação e consulta
+  - Python para ingestão e orchestration
+  - DuckDB para consulta leve
+  - dashboard básico e métricas
+  - foco em processamento e leitura analítica
+- VM 3: execução segura e IA
+  - sandbox ai-jail
+  - processamento de IA e extração de contexto
+  - acesso controlado e isolado
+  - foco em segurança, contenção e operação controlada
 
-Essa escolha é simples, barata e adequada ao objetivo de provar a ideia sem excesso de complexidade.
+Este modelo foi escolhido como padrão para manter a arquitetura clara, segregada e escalável, sem misturar armazenamento, processamento e execução segura em uma única máquina.
+
+## Modelo de infraestrutura alvo (3 VMs)
+
+O projeto deve seguir, como modelo mestre, a separação abaixo:
+
+### VM 1 - dados e catálogo
+
+- CPU: 4 vCPUs
+- RAM: 12 a 16 GB
+- disco: 200 GB SSD
+- serviços: MinIO, PostgreSQL
+- função: preservar o dado bruto e manter o catálogo de metadados
+
+### VM 2 - aplicação e consultas
+
+- CPU: 4 vCPUs
+- RAM: 8 a 12 GB
+- disco: 100 GB SSD
+- serviços: Python, DuckDB, dashboard
+- função: receber arquivos, processar metadados e permitir consultas simples
+
+### VM 3 - sandbox e IA
+
+- CPU: 2 a 4 vCPUs
+- RAM: 8 a 16 GB
+- disco: 100 GB SSD
+- serviços: ai-jail, processadores de IA, extração de texto e tarefas protegidas
+- função: isolar a execução de IA e limitar riscos de acesso indevido
+
+Este é o modelo a ser seguido como referência arquitetural do projeto.
 
 ## Próxima etapa
 

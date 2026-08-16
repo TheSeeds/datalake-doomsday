@@ -172,6 +172,31 @@ Essa camada não deve ser a primeira dependência crítica do projeto; ela deve 
 
 A implementação inicial deve ser modular, mas bem definida. A ideia é entregar algo que funcione de verdade, sem criar um sistema pesado demais antes de validar a ideia.
 
+## Modelo de infraestrutura alvo
+
+O padrão arquitetural do projeto será a separação em 3 máquinas virtuais, como modelo de referência para operação e crescimento:
+
+### VM 1 - armazenamento e catálogo
+
+- MinIO
+- PostgreSQL
+- função: preservar o dado bruto e manter o catálogo de metadados
+
+### VM 2 - aplicação e consulta
+
+- Python
+- DuckDB
+- dashboard básico
+- função: receber arquivos, processar metadados e consultar dados de forma leve
+
+### VM 3 - sandbox e IA
+
+- ai-jail
+- atividades de extração de texto e processamento inteligente
+- função: manter a execução segura, isolada e com acesso controlado
+
+Essa estrutura evita misturar responsabilidades e reduz risco de falha operacional, além de manter a arquitetura alinhada com as práticas de segurança do projeto.
+
 ### Stack proposta inicial
 
 - Armazenamento bruto: MinIO
