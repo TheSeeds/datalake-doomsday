@@ -90,6 +90,12 @@ Regras:
 - não automatizar operações críticas sem checkpoints
 - não permitir que a IA acesse dados fora do sandbox definido
 - separar experimentação de produção
+- qualquer comando que possa apagar, remover, destruir ou substituir dados, arquivos, tabelas, buckets, repositórios ou infraestrutura deve exigir autorização explícita do responsável e declaração formal dos riscos
+- comandos destrutivos como rm -rf, rm, delete, DROP, drop, truncate, exclusões em massa e qualquer operação de destruição devem ser bloqueados por padrão
+
+### Regra de bloqueio direto
+
+Se a IA pedir para executar ações destrutivas, a execução deve ser bloqueada até que haja autorização explícita do responsável e confirmação humana clara.
 
 ## Sandbox de execução para IA: ai-jail
 
@@ -160,6 +166,22 @@ A IA pode operar, mas só em um ambiente controlado e limitado. O ai-jail é a c
 - protótipos precisam passar por testes de integridade básica
 - mudanças em ingestão, metadados e consultas devem ser revisadas antes de escalar
 - a documentação deve acompanhar a evolução do projeto
+- todo comportamento de interface, fluxo de usuário e cenário de interação deve ser validado com testes automatizados
+- toda mudança relevante em UI ou navegação deve ser testada com Playwright antes de ser considerada pronta
+- testes automatizados devem ser a regra padrão, não exceção
+
+## Política de testes obrigatórios
+
+O projeto deve seguir a seguinte regra de qualidade:
+
+- Playwright é o padrão obrigatório para validação de fluxos de interface e comportamento em navegador
+- qualquer funcionalidade de front-end, UI, fluxo de usuário e interação visual deve ter teste automatizado
+- qualquer correção de bug deve vir com teste que reproduza o problema antes da correção
+- mudanças em regras de negócio, validação, ingestão e consulta devem ter testes mínimos de regressão
+- testes devem ser simples, reprodutíveis e executáveis em ambiente de desenvolvimento
+- se a funcionalidade não puder ser validada por teste, deve ser tratada como incompleta
+
+A regra prática é simples: sem teste automatizado, a mudança não é considerada concluída.
 
 ## Regras de contribuição
 

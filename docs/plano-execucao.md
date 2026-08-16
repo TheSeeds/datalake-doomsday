@@ -223,8 +223,10 @@ A sequência imediata do projeto é esta:
 6. integrar leitura básica com DuckDB na VM 2
 7. criar dashboard simples de métricas na VM 2
 8. validar a execução da IA e processamento em sandbox na VM 3
-9. revisar o MVP e documentar o fluxo operacional
-10. registrar tudo em documentação versionada e manter o plano atualizado
+9. aplicar checklist de segurança da IA antes de qualquer operação de automação
+10. bloquear qualquer comando destrutivo sem autorização explícita e declaração de risco
+11. revisar o MVP e documentar o fluxo operacional
+12. registrar tudo em documentação versionada e manter o plano atualizado
 
 ## Memória operacional imediata
 
