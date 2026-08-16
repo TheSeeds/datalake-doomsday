@@ -6,6 +6,61 @@ A arquitetura do datalake-doomsday foi pensada para ser simples, resiliente e im
 
 A proposta não é uma plataforma complexa desde o início. A proposta é uma arquitetura modular em camadas, que cresce conforme a necessidade real do projeto.
 
+## Visão simplificada da infraestrutura
+
+```mermaid
+flowchart TB
+    A[VM 1 - Dados e catálogo] --> B[MinIO\nArmazenamento bruto]
+    A --> C[PostgreSQL\nMetadados e catálogo]
+    D[VM 2 - Aplicação e consulta] --> E[Python\nIngestão e orquestração]
+    D --> F[DuckDB\nConsulta leve]
+    D --> G[Dashboard\nIndicadores]
+    H[VM 3 - Sandbox e IA] --> I[ai-jail\nExecução segura]
+    I --> J[IA / extração / contexto]
+
+    E --> B
+    E --> C
+    F --> C
+    J --> C
+```
+
+## Mapa de disponibilidade por processo
+
+```mermaid
+flowchart LR
+    subgraph P1[Processo 1: ingestão]
+        P1A[Arquivo chega]
+        P1B[Validação]
+        P1C[Hash]
+    end
+
+    subgraph P2[Processo 2: persistência]
+        P2A[VM 1]
+        P2B[MinIO]
+        P2C[PostgreSQL]
+    end
+
+    subgraph P3[Processo 3: consulta]
+        P3A[VM 2]
+        P3B[DuckDB]
+        P3C[Dashboard]
+    end
+
+    subgraph P4[Processo 4: segurança e IA]
+        P4A[VM 3]
+        P4B[ai-jail]
+        P4C[Processamento permitido]
+    end
+
+    P1A --> P1B --> P1C
+    P1C --> P2B
+    P1C --> P2C
+    P2C --> P3B
+    P3B --> P3C
+    P4A --> P4B --> P4C
+    P4C --> P2C
+```
+
 ## Compromisso de arquitetura aberta
 
 A arquitetura deste projeto deve ser 100% compatível com software livre e open source.
@@ -175,6 +230,33 @@ A implementação inicial deve ser modular, mas bem definida. A ideia é entrega
 ## Modelo de infraestrutura alvo
 
 O padrão arquitetural do projeto será a separação em 3 máquinas virtuais, como modelo de referência para operação e crescimento:
+
+```mermaid
+flowchart TB
+    subgraph VM1[VM 1 - Dados e catálogo]
+        A1[MinIO]
+        A2[PostgreSQL]
+    end
+
+    subgraph VM2[VM 2 - Aplicação e consulta]
+        B1[Python]
+        B2[DuckDB]
+        B3[Dashboard]
+    end
+
+    subgraph VM3[VM 3 - Sandbox e IA]
+        C1[ai-jail]
+        C2[Extração de texto]
+        C3[Processamento IA]
+    end
+
+    B1 --> A1
+    B1 --> A2
+    B2 --> A2
+    C1 --> A2
+    C2 --> A2
+    C3 --> A2
+```
 
 ### VM 1 - armazenamento e catálogo
 
