@@ -1,0 +1,187 @@
+# Plano de execução do escopo inicial
+
+## Visão geral
+
+Este documento registra o plano inicial de execução do projeto datalake-doomsday e funciona como uma linha do tempo viva de decisões, objetivos e entregas.
+
+Ele deve ser versionado e atualizado de forma contínua conforme o projeto evolui.
+
+## Objetivo do plano
+
+O plano tem como objetivo manter clareza sobre:
+
+- o que o projeto está tentando construir
+- quais módulos fazem parte do escopo inicial
+- quais decisões foram tomadas
+- o que já foi validado
+- o que vem em seguida
+- o que precisa ser revisado antes de avançar
+
+## Regra de evolução
+
+Este documento não é estático.
+
+Sempre que uma decisão, mudança de arquitetura ou nova prioridade surgirem, o plano deve ser atualizado com:
+
+- data da mudança
+- descrição da mudança
+- motivo
+- impacto no escopo
+- next steps
+
+## Escopo inicial
+
+O escopo inicial do projeto inclui:
+
+1. preservação do dado bruto
+2. organização por metadados e contexto
+3. separação entre armazenamento, catálogo e consulta
+4. uso de infraestrutura leve e escalável por camadas
+5. suporte para consulta analítica simples
+6. uso futuro como base de conhecimento para IA
+
+## Fase 1: definição da base do projeto
+
+### Objetivos
+
+- consolidar a visão do projeto
+- estabelecer documentação central e interna
+- fixar as regras de software livre e segurança
+- definir o escopo do primeiro protótipo
+
+### Entregáveis
+
+- visão do projeto
+- escopo inicial
+- arquitetura em camadas
+- guardrails do projeto
+- política de uso do ai-jail
+
+### Status
+
+Em andamento e documentado.
+
+## Fase 2: arquitetura do lake
+
+### Objetivos
+
+- definir a separação entre armazenamento bruto, metadados e consulta
+- decidir como a ingestão deve acontecer
+- estabelecer regras para organização por categoria e origem
+- decidir a estratégia inicial de custo e armazenamento
+
+### Entregáveis esperados
+
+- diagrama de camadas
+- política de ingestão
+- regras de catalogação
+- níveis de armazenamento: bruto, quente, frio e archive
+
+### Status
+
+Planejado.
+
+## Fase 3: protótipo funcional mínimo
+
+### Objetivos
+
+- montar um protótipo funcional com ingestão mínima
+- validar a organização de arquivos e metadados
+- testar consulta leve e indexação simples
+- validar a lógica em sandbox
+
+### Entregáveis esperados
+
+- protótipo funcional de ingestão
+- estrutura mínima de armazenamento
+- metadados básicos por arquivo
+- consulta simples por categoria e origem
+
+### Status
+
+Planejado.
+
+## Fase 4: dashboards e visualização
+
+### Objetivos
+
+- transformar dados em indicadores úteis
+- permitir percepção de contexto e uso do conteúdo
+- validar visualização de conhecimento mínimo
+
+### Entregáveis esperados
+
+- painéis simples
+- visualização de métricas básicas
+- exploração por fontes e categorias
+
+### Status
+
+Planejado.
+
+## Fase 5: IA e base de conhecimento
+
+### Objetivos
+
+- extrair texto e metadados
+- preparar o lake para ser consultado por IA
+- criar uma camada de busca contextualizada
+- validar uso de IA como apoio de descoberta e análise
+
+### Entregáveis esperados
+
+- mecanismo de extração textual
+- índice de busca por contexto
+- política de acesso para IA
+- integração segura com o sandbox e guardrails
+
+### Status
+
+Planejado.
+
+## Decisões estratégicas já assumidas
+
+- o projeto é 100% software livre e open source
+- o foco inicial é arquitetura em camadas, não cluster pesado
+- todo dado bruto deve ser preservado
+- metadados e catálogo são prioritários
+- protótipos devem operar em sandbox
+- o ai-jail deve ser usado como camada de contenção para execução de IA
+
+## Riscos principais
+
+- crescimento descontrolado de dados sem metadados
+- excesso de complexidade antes da necessidade
+- ignorar a separação entre dados crus e processados
+- permitir acesso amplo demais à execução da IA
+- misturar protótipo com produção
+
+## Práticas de evolução do plano
+
+Cada nova mudança deve ser adicionada ao plano em formato de registro, com:
+
+- data
+- objetivo
+- decisão
+- impacto no escopo
+- próximos passos
+- responsável, quando aplicável
+
+## Registro de mudanças
+
+### 2026-08-15
+
+- criação do plano de execução inicial
+- definição do escopo do projeto
+- consolidação da documentação base
+- definição das guardrails e sandbox para IA
+
+## Próxima ação prioritária
+
+Definir a arquitetura técnica inicial do lake, incluindo:
+
+- camada de ingestão
+- camada de armazenamento bruto
+- camada de metadados e catálogo
+- camada de consulta leve
+- primeira estratégia de sandbox e acesso
