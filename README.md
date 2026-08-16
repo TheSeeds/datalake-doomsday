@@ -115,9 +115,59 @@ A validação automatizada cobre:
 
 O workflow principal está em [.github/workflows/ci.yml](.github/workflows/ci.yml).
 
-### Como testar localmente
+## Fluxo operacional do laboratório
 
-No repositório, execute:
+Este ambiente foi pensado para subir e destruir com comandos simples, sem depender de dezenas de etapas manuais.
+
+### Subir tudo
+
+```bash
+make up
+```
+
+Este comando:
+
+1. sobe as VMs com Vagrant + libvirt
+2. provisiona o ambiente base
+3. inicia o stack da VM-01 com MinIO e PostgreSQL
+
+### Validar infraestrutura
+
+```bash
+make ci
+```
+
+Este comando executa a validação simples da estrutura do laboratório.
+
+### Verificar status
+
+```bash
+make status
+```
+
+### Pausar tudo
+
+```bash
+make down
+```
+
+### Destruir tudo
+
+```bash
+make destroy
+```
+
+### Entrar em uma VM específica
+
+```bash
+make ssh-vm-01
+make ssh-vm-02
+make ssh-vm-03
+```
+
+## Como testar localmente
+
+No repositório, você pode usar os comandos do Makefile ou executar a validação manual:
 
 ```bash
 cd /home/cflb/Projetos/TheSeed/datalake-doomsday
@@ -129,7 +179,7 @@ docker compose -f infra/docker/vm-02/docker-compose.yml config >/dev/null
 docker compose -f infra/docker/vm-03/docker-compose.yml config >/dev/null
 ```
 
-### Como funciona a pipeline
+## Como funciona a pipeline
 
 A pipeline segue uma lógica simples:
 
@@ -140,3 +190,10 @@ A pipeline segue uma lógica simples:
 5. em execução manual em runner self-hosted, também sobe a VM-01 e valida o Docker dentro dela
 
 Este modelo mantém o ambiente seguro, rápido e útil para evolução controlada do projeto, sem transformar o GitHub Actions em um ambiente de produção.
+
+## Política de operação
+
+- o ambiente é local e de teste
+- o objetivo é acelerar validação, não operar produção
+- qualquer destruição deve ser intencional e explícita
+- os comandos de provisionamento e destruição devem ser reproduzíveis e simples
