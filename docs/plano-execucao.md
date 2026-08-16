@@ -29,6 +29,32 @@ Sempre que uma decisão, mudança de arquitetura ou nova prioridade surgirem, o 
 - impacto no escopo
 - next steps
 
+## Estado geral do projeto
+
+Use o checklist abaixo para marcar o que já foi concluído e o que ainda está pendente.
+
+## Checklist do escopo inicial
+
+- [x] definição da visão do projeto
+- [x] definição do nome e conceito do projeto
+- [x] documentação central do guarda-chuva TheSeed
+- [x] criação do repositório datalake-doomsday
+- [x] criação da documentação interna do projeto
+- [x] definição do escopo inicial do projeto
+- [x] definição da arquitetura em camadas
+- [x] definição das guardrails do projeto
+- [x] documentação da política de software livre e open source
+- [x] criação da política de uso do ai-jail
+- [x] criação do plano de execução versionado
+- [ ] definição da arquitetura técnica do lake
+- [ ] definição da stack open source inicial
+- [ ] protótipo de ingestão mínima
+- [ ] protótipo de armazenamento bruto
+- [ ] protótipo de metadados e catálogo
+- [ ] protótipo de consulta leve
+- [ ] primeira visão de dashboards
+- [ ] integração de IA com base de conhecimento
+
 ## Escopo inicial
 
 O escopo inicial do projeto inclui:
@@ -59,7 +85,7 @@ O escopo inicial do projeto inclui:
 
 ### Status
 
-Em andamento e documentado.
+Concluído.
 
 ## Fase 2: arquitetura do lake
 
@@ -79,7 +105,7 @@ Em andamento e documentado.
 
 ### Status
 
-Planejado.
+Pendente.
 
 ## Fase 3: protótipo funcional mínimo
 
@@ -99,7 +125,7 @@ Planejado.
 
 ### Status
 
-Planejado.
+Pendente.
 
 ## Fase 4: dashboards e visualização
 
@@ -117,7 +143,7 @@ Planejado.
 
 ### Status
 
-Planejado.
+Pendente.
 
 ## Fase 5: IA e base de conhecimento
 
@@ -137,7 +163,7 @@ Planejado.
 
 ### Status
 
-Planejado.
+Pendente.
 
 ## Decisões estratégicas já assumidas
 
@@ -175,6 +201,7 @@ Cada nova mudança deve ser adicionada ao plano em formato de registro, com:
 - definição do escopo do projeto
 - consolidação da documentação base
 - definição das guardrails e sandbox para IA
+- criação do checklist de execução e definição de status
 
 ## Próxima ação prioritária
 
@@ -185,3 +212,11 @@ Definir a arquitetura técnica inicial do lake, incluindo:
 - camada de metadados e catálogo
 - camada de consulta leve
 - primeira estratégia de sandbox e acesso
+
+## Convenção de status
+
+- [x] concluído
+- [ ] pendente
+- [ ] em revisão
+
+Sempre que uma etapa for concluída, basta marcar o item no checklist e registrar a atualização no histórico de mudanças.
