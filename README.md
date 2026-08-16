@@ -135,6 +135,16 @@ Este comando:
 
 A opção `VAGRANT_DISABLE_NFS=1` foi usada para evitar o prompt de sudo do host ao limpar exports NFS do Vagrant, que quebrava a automatização do laboratório local.
 
+A VM-03 também foi preparada para um serviço mínimo de IA com vLLM. O objetivo é testar o fluxo da cadeia local com uma arquitetura pequena e legível, usando um modelo de consulta leve em vez de uma stack pesada.
+
+O endpoint esperado do modelo é:
+
+```text
+http://192.168.56.12:8000/v1
+```
+
+Este serviço depende de acesso local à GPU do host e serve como prova de conceito para consulta local no laboratório.
+
 ### Validar infraestrutura
 
 ```bash

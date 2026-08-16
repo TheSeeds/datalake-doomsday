@@ -13,3 +13,29 @@ services:
       - /tmp:rw,noexec,nosuid,nodev,size=64m
     network_mode: none
     entrypoint: ["sh", "-lc", "echo 'Sandbox ready'; while true; do sleep 60; done"]
+
+  vllm:
+    image: vllm/vllm-openai:latest
+    container_name: vllm-query
+    restart: unless-stopped
+    runtime: nvidia
+    environment:
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+      HF_HUB_ENABLE_HF_TRANSFER: "1"
+    ports:
+      - "8000:8000"
+    volumes:
+      - vllm_cache:/root/.cache/huggingface
+    command: >
+      python -m vllm.entrypoints.openai.api_server
+      --model Qwen/Qwen2.5-3B-Instruct
+      --host 0.0.0.0
+      --port 8000
+      --dtype float16
+      --max-model-len 2048
+      --gpu-memory-utilization 0.85
+      --trust-remote-code
+
+volumes:
+  vllm_cache:
