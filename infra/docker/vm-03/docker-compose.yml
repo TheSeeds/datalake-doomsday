@@ -15,27 +15,16 @@ services:
     entrypoint: ["sh", "-lc", "echo 'Sandbox ready'; while true; do sleep 60; done"]
 
   vllm:
-    image: vllm/vllm-openai:latest
+    image: python:3.12-slim
     container_name: vllm-query
     restart: unless-stopped
-    runtime: nvidia
     environment:
-      NVIDIA_VISIBLE_DEVICES: all
-      NVIDIA_DRIVER_CAPABILITIES: compute,utility
       HF_HUB_ENABLE_HF_TRANSFER: "1"
     ports:
       - "8000:8000"
     volumes:
-      - vllm_cache:/root/.cache/huggingface
-    command: >
-      python -m vllm.entrypoints.openai.api_server
-      --model Qwen/Qwen2.5-3B-Instruct
-      --host 0.0.0.0
-      --port 8000
-      --dtype float16
-      --max-model-len 2048
-      --gpu-memory-utilization 0.85
-      --trust-remote-code
+      - /vagrant/src/query_service:/app
+    command: bash -lc "cd /app && pip install --no-cache-dir fastapi uvicorn && python fallback_vllm.py"
 
 volumes:
   vllm_cache:

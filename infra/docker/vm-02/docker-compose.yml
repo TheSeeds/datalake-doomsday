@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     working_dir: /workspace
     volumes:
-      - ../../../:/workspace
+      - /vagrant:/workspace
     environment:
       PYTHONUNBUFFERED: "1"
     command: bash -lc "python -m http.server 8000 --directory /workspace"
@@ -18,15 +18,9 @@ services:
     restart: unless-stopped
     working_dir: /app
     volumes:
-      - ../../src/query_service:/app
+      - /vagrant/src/query_service:/app
     environment:
       MODEL_ENDPOINT: http://192.168.56.12:8000/v1/chat/completions
-    command: bash -lc "pip install --no-cache-dir -r /app/requirements.txt && uvicorn app:app --host 0.0.0.0 --port 8001"
+    command: bash -lc "cd /app && pip install --no-cache-dir -r requirements.txt && uvicorn app:app --host 0.0.0.0 --port 8001"
     ports:
       - "8001:8001"
-
-  duckdb:
-    image: duckdb/duckdb:latest
-    container_name: duckdb-query
-    restart: unless-stopped
-    entrypoint: ["sh", "-lc", "echo 'DuckDB runtime ready'; sleep infinity"]
