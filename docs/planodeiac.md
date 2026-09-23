@@ -6,11 +6,15 @@
 - [x] Separação entre isolamento e serviços
 - [x] Definição da estratégia Docker + Compose
 - [x] Documentação da abordagem local
-- [ ] Criação dos arquivos de infraestrutura
-- [ ] Provisionamento base das VMs
-- [ ] Implementação dos serviços MinIO / PostgreSQL / app
-- [ ] Implementação da VM de IA segura
-- [ ] Testes automatizados de infraestrutura
+- [x] Criação dos arquivos de infraestrutura (Vagrantfile, provision, compose por VM)
+- [x] Provisionamento base das VMs (scripts install-docker.sh e bootstrap-vm.sh)
+- [x] Implementação dos serviços MinIO / PostgreSQL / app de consulta (query-service e fallback vLLM)
+- [ ] Implementação da VM de IA segura (ai-jail ainda é container "dummy"; falta integração real)
+- [x] Testes automatizados de infraestrutura (CI estático + testes de unidade do query-service)
+
+> Nota (2026-09-07): o MVP de ingestão, schema de PostgreSQL e DuckDB ainda não estão
+> implementados de fato. O que existe é a camada de infra (VMs, Docker, MinIO, PostgreSQL)
+> e a camada de consulta/IA (query-service + fallback vLLM), validada por testes de unidade.
 
 ## Objetivo do plano
 

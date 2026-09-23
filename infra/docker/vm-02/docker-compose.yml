@@ -20,7 +20,9 @@ services:
     volumes:
       - /vagrant/src/query_service:/app
     environment:
-      MODEL_ENDPOINT: http://192.168.56.12:8000/v1/chat/completions
+      MODEL_ENDPOINT: ${MODEL_ENDPOINT:-http://192.168.56.12:8000/v1/chat/completions}
+      FALLBACK_ENDPOINT: ${FALLBACK_ENDPOINT:-http://192.168.56.12:8000/v1/chat/completions}
+      MODEL_NAME: ${MODEL_NAME:-Qwen/Qwen2.5-0.5B-Instruct}
     command: bash -lc "cd /app && pip install --no-cache-dir -r requirements.txt && uvicorn app:app --host 0.0.0.0 --port 8001"
     ports:
       - "8001:8001"

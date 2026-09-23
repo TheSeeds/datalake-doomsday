@@ -1,7 +1,7 @@
 SHELL := /bin/bash
 VAGRANT_DIR := tests/vms
 
-.PHONY: up down destroy status provision ci ssh-vm-01 ssh-vm-02 ssh-vm-03 shell
+.PHONY: up down destroy status provision ci test ssh-vm-01 ssh-vm-02 ssh-vm-03 shell
 
 up:
 	@cd $(VAGRANT_DIR) && VAGRANT_DISABLE_NFS=1 vagrant up --provision vm-01-data-core --provider=libvirt
@@ -35,6 +35,9 @@ ssh-vm-02:
 ssh-vm-03:
 	@cd $(VAGRANT_DIR) && vagrant ssh vm-03-ai-sandbox
 
+test:
+	@cd src/query_service && python -m pytest -q ../../tests/unit
+
 ci:
 	@ruby -c tests/vms/Vagrantfile
 	@bash -n infra/provision/install-docker.sh
@@ -42,4 +45,6 @@ ci:
 	@docker compose -f infra/docker/vm-01/docker-compose.yml config >/dev/null
 	@docker compose -f infra/docker/vm-02/docker-compose.yml config >/dev/null
 	@docker compose -f infra/docker/vm-03/docker-compose.yml config >/dev/null
+	@make test
 	@echo "Validação do laboratório concluída com sucesso."
+

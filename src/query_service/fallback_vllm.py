@@ -1,3 +1,4 @@
+import os
 from typing import Any
 
 from fastapi import FastAPI
@@ -6,9 +7,11 @@ import uvicorn
 
 app = FastAPI(title="Local vLLM fallback")
 
+DEFAULT_MODEL = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-0.5B-Instruct")
+
 
 class ChatPayload(BaseModel):
-    model: str = "Qwen/Qwen2.5-3B-Instruct"
+    model: str = DEFAULT_MODEL
     messages: list[dict[str, str]]
     max_tokens: int = 128
     temperature: float = 0.2
@@ -21,7 +24,7 @@ def health() -> dict[str, Any]:
 
 @app.get("/v1/models")
 def models() -> dict[str, Any]:
-    return {"data": [{"id": "Qwen/Qwen2.5-3B-Instruct", "object": "model"}]}
+    return {"data": [{"id": DEFAULT_MODEL, "object": "model"}]}
 
 
 @app.post("/v1/chat/completions")
@@ -31,7 +34,7 @@ async def chat(payload: ChatPayload) -> dict[str, Any]:
     return {
         "id": "chatcmpl-local",
         "object": "chat.completion",
-        "model": payload.model,
+        "model": DEFAULT_MODEL,
         "choices": [
             {
                 "index": 0,
@@ -48,4 +51,4 @@ async def chat(payload: ChatPayload) -> dict[str, Any]:
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("PORT", "8000")))

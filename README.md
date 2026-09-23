@@ -213,6 +213,25 @@ docker compose -f infra/docker/vm-02/docker-compose.yml config >/dev/null
 docker compose -f infra/docker/vm-03/docker-compose.yml config >/dev/null
 ```
 
+## Testes de unidade
+
+O query-service e o fallback vLLM têm testes de unidade com pytest
+(em `tests/unit/`). Para executar apenas os testes:
+
+```bash
+make test
+```
+
+Para validar todo o laboratório (sintaxe + compose + testes), use:
+
+```bash
+make ci
+```
+
+As credenciais de laboratório de MinIO/PostgreSQL vivem em variáveis de
+ambiente (defaults documentados em `infra/docker/vm-01/README.md`), fora
+do código-fonte.
+
 ## Como funciona a pipeline
 
 A pipeline segue uma lógica simples:

@@ -50,11 +50,12 @@ Use o checklist abaixo para marcar o que já foi concluído e o que ainda está 
 - [x] definição da arquitetura técnica do lake em camadas
 - [x] definição da stack inicial recomendada
 - [ ] protótipo de ingestão mínima
-- [ ] protótipo de armazenamento bruto em MinIO
+- [ ] protótipo de armazenamento bruto em MinIO (infra montada; falta ingestor e schema)
 - [ ] protótipo de metadados e catálogo em PostgreSQL
 - [ ] protótipo de consulta leve em DuckDB
 - [ ] dashboard mínimo de métricas
-- [ ] integração segura de IA com sandbox
+- [ ] integração segura de IA com sandbox (query-service validado; ai-jail real pendente)
+- [x] camada de consulta e fallback local (query-service + fallback vLLM), validada por testes de unidade
 - [ ] revisão do MVP e documentação de operação
 
 ## Escopo inicial
@@ -198,6 +199,16 @@ Cada nova mudança deve ser adicionada ao plano em formato de registro, com:
 - responsável, quando aplicável
 
 ## Registro de mudanças
+
+### 2026-09-07
+
+- revisão geral do projeto
+- testes de unidade do query-service e fallback vLLM (10 testes, pytest)
+- credenciais de MinIO/PostgreSQL movidas a variáveis de ambiente (fora do código-fonte)
+- modelo de IA configurável via `MODEL_NAME` (padrão: Qwen2.5-0.5B-Instruct)
+- fallback real no query-service quando o endpoint principal falha
+- adição de `requirements-dev.txt`, `pytest.ini` e job de testes no CI
+- atualização dos checklists de plano e IaC ao estado real do repositório
 
 ### 2026-08-15
 
