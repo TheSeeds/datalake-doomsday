@@ -24,6 +24,7 @@ Este arquivo vive no repositório de **conceito**. O que é operacional
 | [009](#adr-009) | Apache 2.0 | aceita |
 | [010](#adr-010) | Piso de VRAM em vez de flag booleana de GPU | aceita |
 | [011](#adr-011) | Três camadas de acesso independentes | aceita |
+| [012](#adr-012) | Módulo `ingestion`, função `ingest()` — nunca o mesmo nome | aceita |
 
 ---
 
@@ -296,3 +297,45 @@ leitura de objeto. Um pod autorizado a existir pode ler o bucket inteiro.
 
 **Fricção deliberada:** leitura na LAN é livre (sem conta, como no NOMAD);
 escrita, ingestão e operação destrutiva exigem token. Dois níveis, não seis.
+
+---
+
+## ADR-012
+
+**Módulo `ingestion`, função `ingest()` — nunca o mesmo nome**
+
+**Contexto.** Durante a Onda 1, o módulo `lakecore/ingest.py` e a função
+`ingest()` tinham o mesmo nome. O `__init__.py` reexportava a função, o que faz
+o pacote expor o **nome** `lakecore.ingest`. Resultado: `import lakecore.ingest
+as modulo` devolvia a **função**, não o módulo.
+
+Isso não quebrava nada visível — e é exatamente o problema. Um teste de
+integridade usava `monkeypatch` nesse módulo para simular arquivo modificado
+durante a gravação. Como o "módulo" era a função, o patch alterava atributos de
+um objeto de função e a ingestão continuava usando a implementação real: o teste
+**passava sem nunca exercitar a proteção**, e falhava ao ser reescrito com
+`monkeypatch`.
+
+**Decisão.** Renomear o módulo para `lakecore/ingestion.py`. A função pública
+continua `ingest()`. Regra geral: **nome de módulo e nome de função não podem
+colidir quando a função é reexportada no `__init__`**.
+
+**Alternativas rejeitadas.**
+- *Renomear a função para `ingest_file()`* — resolveria, mas `ingest` é o nome
+  do domínio e a assinatura de CLI `lakecore ingest` já é natural.
+- *Não reexportar a função no `__init__`* — manteria o nome privado do pacote e
+  obrigaria todo chamador a `from lakecore.ingestion import ingest`. Funciona,
+  mas o pacote existe para ser ergonômico; o nome do módulo é o detalhe interno.
+- *Importar o módulo por caminho* (`importlib`) no teste — contornaria o sintoma.
+  Teste que precisa de `importlib` para alcançar código de produção aponta para
+  defeito de API, não para limitação do teste.
+
+**Consequência.** Dois aprendizados que valem além deste caso:
+
+1. **Um teste que não pode falhar é pior que teste ausente**, porque produz
+   confiança. A detecção veio de reescrever o teste com a ferramenta correta
+   (`monkeypatch`), não de ler o código.
+2. **Incidente de processo registrado:** o commit da Onda 1 foi enviado com CI
+   vermelho porque `make ci 2>&1 | tail` fez o `&&` do shell enxergar o exit code
+   do `tail`. Corrigido com o alvo `make ci-check`, que aplica `set -o pipefail`
+   e aborta com mensagem explícita. Gate validado com falha proposital: exit 2.
