@@ -55,6 +55,11 @@ combinação válida, e vice-versa.
 > Módulos passam a declarar **piso de VRAM** (`requires.vram`), e módulo que não
 > satisfaz o piso **recusa instalação** em vez de degradar para CPU em silêncio.
 > Detalhes e medições: `plano-atividades.md` §11 no repo do ambiente.
+>
+> **Emenda 2 (mesma data):** existe um degrau utilizável em **4 GB** para LLM de
+> 0,5–1,5B com `--enforce-eager` — medido em `vllm-doomsday/docs/resultados.md`.
+> O módulo de IA, quando existir, roda sobre **vLLM** (teto de memória explícito
+> e batching contínuo), falando API OpenAI. Ver ADR-010.
 
 ---
 

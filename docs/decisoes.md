@@ -277,6 +277,42 @@ especulação e vira restrição medida:
 **Regra:** nenhuma medição de desempenho de IA é válida com a GPU compartilhada.
 Medir sob contenção não mede o modelo — mede a disputa.
 
+### Emenda (2026-11-18) — o degrau de 4 GB
+
+Os pisos acima estavam **incompletos**: ignoravam que existe um degrau utilizável
+abaixo de 7B. Fonte: o estudo em `vllm-doomsday/docs/resultados.md`, medido nesta
+máquina em 2026-09-07.
+
+| modelo | piso de VRAM | nesta máquina |
+|---|---|---|
+| embed pequeno | 2 GB | ✅ |
+| **LLM 0.5–1.5B** | **4 GB**, com `--enforce-eager` | ✅ **se a GPU estiver livre** |
+| LLM 7B quantizado | 6 GB | ❌ |
+| LLM 13B+ | 12 GB+ | ❌ |
+
+O estudo é explícito sobre o que **não** caberia: com `gpu-memory-utilization 0.90`
+e `max-model-len 4096`, o consumo somado (pesos 1,45 + ativação 0,25 + KV cache
+1,61 + CUDA graphs 0,41 ≈ 3,72 GiB) estourou os 3,68 GiB disponíveis. A
+configuração que estabilizou foi `0.80` / `2048` / `--enforce-eager`.
+
+**Consequência para o módulo de IA.** Se ele existir, roda **vLLM**, não Ollama,
+e por dois motivos concretos, não por preferência:
+
+1. **Teto de memória explícito.** `--gpu-memory-utilization` é configuração;
+   no Ollama o consumo é decidido pelo processo. Num pod que divide a GPU com
+   outro serviço preexistente, controle explícito não é conveniência — é o que
+   evita OOM.
+2. **Batching contínuo.** O lake pode receber requisição do `query-api`, do
+   dashboard e de um agente ao mesmo tempo. PagedAttention serve vários clientes
+   com uma fração da VRAM que o modo single-stream exigiria.
+
+O módulo deve falar **API OpenAI**, com vLLM como implementação de referência.
+Amarrar em vLLM transformaria o Ollama — que já roda nesta máquina — em dívida
+em vez de alternativa.
+
+**Continua valendo:** a IA não entra antes da Onda 7. O que muda é que a decisão
+técnica deixou de ser especulação e passou a ter medição com data e fonte.
+
 ---
 
 ## ADR-011
