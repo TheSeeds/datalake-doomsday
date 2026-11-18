@@ -32,6 +32,8 @@ diário e perder a função.
 | [010](#adr-010) | Piso de VRAM em vez de flag booleana de GPU | aceita |
 | [011](#adr-011) | Três camadas de acesso independentes | aceita |
 | [012](#adr-012) | Módulo `ingestion`, função `ingest()` — nunca o mesmo nome | aceita |
+| [013](#adr-013) | Ingestão não pergunta ao storage se o objeto existe | aceita |
+| [014](#adr-014) | Chat como interface principal: conversar com os próprios dados | aceita |
 
 ---
 
@@ -340,6 +342,81 @@ leitura de objeto. Um pod autorizado a existir pode ler o bucket inteiro.
 
 **Fricção deliberada:** leitura na LAN é livre (sem conta, como no NOMAD);
 escrita, ingestão e operação destrutiva exigem token. Dois níveis, não seis.
+
+---
+
+## ADR-013
+
+**A ingestão não pergunta ao storage se o objeto existe**
+
+**Contexto.** A primeira ingestão real falhou com HTTP 500. A causa: `ingest()`
+chamava `store.exists()` depois do `put`, e o adaptador tratava `403` como
+"não existe". Com chave **write-only** (ADR-011), o Garage nega `HeadObject` com
+403 — e 403 significa "não posso ver", não "não existe".
+
+**Decisão.** `exists()` **sai do contrato** da porta `ObjectStore`. Se uma
+implementação oferecer (verificação com credencial de leitura, `restore drill`),
+ela levanta em 403 em vez de devolver `False`. A ingestão **não** chama nada
+disso.
+
+**Alternativas rejeitadas.**
+- *Devolver `False` em 403.* Era a versão original. Funciona por acidente, e
+  registra como fato verificado algo que nunca foi verificado: o pior tipo de
+  verde.
+- *Dar permissão de leitura ao ingestor.* Resolveria o sintoma e destruiria a
+  propriedade do ADR-011: um ingestor comprometido passaria a exfiltrar o acervo.
+- *Manter o `exists()` para "verificação de integridade".* Não verifica: o que
+  se quer saber é se os bytes estão certos, e isso exige leitura de verdade.
+
+**Consequência.** Idempotência vem do **endereçamento**, não de checagem: a
+chave é o `sha256` do conteúdo, então reescrever o mesmo dado grava os mesmos
+bytes sobre a mesma chave. Quem responde "já existe?" é o **catálogo**, que tem
+índice único em `sha256` e é consultado antes.
+
+Duas chaves, com papéis separados: `lakecore-ingest` (W) e `lakecore-verify` (R).
+Credencial que lê e escreve é a que ninguém consegue auditar.
+
+---
+
+## ADR-014
+
+**Chat como interface principal: conversar com os próprios dados**
+
+**Contexto.** O produto estava definido como "controle sobre os próprios dados,
+com coleta simples, custo baixo". Faltava a **interface**. Levantado em
+2026-11-18: ao executar pela primeira vez, o que a pessoa quer é
+*conversar com os dados dela*.
+
+Isso é coerente com a arquitetura já decidida, e não é moda: o catálogo é o
+produto (ADR-004), e um chat é a forma mais curta de acessar um catálogo sem
+aprender SQL.
+
+**Decisão.** O chat é a interface principal da Onda 5. Dashboard passa a ser
+**secundário**, e serve de diagnóstico de saúde do lake, não de exploração.
+
+O chat **não alucina sobre o acervo**: toda resposta que afirma algo sobre os
+dados nasce de uma consulta executada contra o catálogo. O modelo redige; o
+DuckDB/PostgreSQL responde.
+
+**Alternativas rejeitadas.**
+- *Dashboard de métricas como interface principal.* Mostra volume por origem e
+  "saúde da ingestão" — útil para operador, inútil para quem quer achar um
+  documento. Não responde a pergunta que a pessoa faz.
+- *Busca por palavra-chave apenas.* Resolve `grep`, não "o que eu tenho sobre
+  X". E a pessoa não sabe o nome do arquivo que procura — se soubesse, não
+  precisaria do lake.
+- *RAG com embeddings desde já.* Exige modelo de embedding, índice vetorial e
+  GPU. A pergunta inicial é estrutural ("quantos PDFs de 2025?"), e SQL resolve
+  sem VRAM. Fica para quando a pergunta virar semântica.
+
+**Consequência — o executor é o componente crítico.** Se o modelo gerar SQL, o
+SQL precisa ser **gerado, validado e executado com credencial read-only**, com
+`LIMIT`, `timeout` de statement e explicação do que foi consultado. Um `DROP`
+gerado por modelo é o pior cenário do projeto: o dado bruto é o ativo, e uma
+alucinação não pode alcançá-lo.
+
+O SQL sugerido é **mostrado** ao usuário. Transparência é o que separa "conversar
+com os dados" de "confiar no chatbot".
 
 ---
 
