@@ -34,6 +34,7 @@ diário e perder a função.
 | [012](#adr-012) | Módulo `ingestion`, função `ingest()` — nunca o mesmo nome | aceita |
 | [013](#adr-013) | Ingestão não pergunta ao storage se o objeto existe | aceita |
 | [014](#adr-014) | Chat como interface principal: conversar com os próprios dados | aceita |
+| [015](#adr-015) | vLLM é o único runtime de LLM; Ollama desabilitado | aceita |
 
 ---
 
@@ -459,3 +460,37 @@ colidir quando a função é reexportada no `__init__`**.
    vermelho porque `make ci 2>&1 | tail` fez o `&&` do shell enxergar o exit code
    do `tail`. Corrigido com o alvo `make ci-check`, que aplica `set -o pipefail`
    e aborta com mensagem explícita. Gate validado com falha proposital: exit 2.
+
+---
+
+## ADR-015
+
+**vLLM é o único runtime de LLM; Ollama desabilitado**
+
+**Contexto.** A máquina tem RTX 3050 com **4 GB de VRAM**. Ollama e vLLM rodavam
+ao mesmo tempo, disputando os mesmos 4 GB: Ollama com 70 MiB e um
+`VLLM::EngineCore` com ~3.5 GB. Nenhum dos dois tinha a GPU inteira, então
+nenhuma medição de desempenho era válida — medir sob contenção mede a disputa,
+não o modelo.
+
+**Decisão.** vLLM é o runtime do módulo de chat. Ollama é **desabilitado**
+permanentemente (`systemctl disable --now`), mas **não removido**: binário e
+modelos continuam em disco, e sobe sob demanda com `systemctl start ollama`.
+
+**Alternativas rejeitadas.**
+- *Manter os dois e escolher por disponibilidade.* Torna o comportamento não
+  determinístico: o chat de hoje pode ser mais lento que o de ontem sem nenhuma
+  mudança de código.
+- *Remover o Ollama.* Custo de reinstalar sem ganho — ele não consome nada
+  enquanto está parado.
+- *Ollama como padrão.* Contra o ADR-010: sem `--gpu-memory-utilization` o
+  consumo é decidido pelo processo, e num pod que divide GPU isso é o que produz
+  OOM intermitente.
+
+**Consequência.** A GPU passa a ter um dono. A medição de desempenho do chat só é
+válida com o Ollama parado — e o `verify.sh` da Onda 7 deve **checar isso antes
+de medir**, em vez de assumir.
+
+O módulo de chat fala **API OpenAI**, então trocar de runtime continua sendo
+mudança de configuração, não de código. Desabilitar o Ollama não é acoplamento;
+é higiene de recurso compartilhado.
