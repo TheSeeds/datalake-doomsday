@@ -494,3 +494,47 @@ de medir**, em vez de assumir.
 O módulo de chat fala **API OpenAI**, então trocar de runtime continua sendo
 mudança de configuração, não de código. Desabilitar o Ollama não é acoplamento;
 é higiene de recurso compartilhado.
+
+### Emenda (2026-11-18, após desabilitar o Ollama) — o que a medição revelou
+
+Com o Ollama parado, o `nvidia-smi` mostrou **3591 de 4096 MiB ainda ocupados**.
+O consumidor era o container `vllm-study`, **de outro projeto**, servindo
+`Qwen/Qwen2.5-0.5B-Instruct` com `--gpu-memory-utilization 0.80`.
+
+Isso muda a conclusão do ADR, para melhor e com dois fatos medidos:
+
+**1. O vLLM funciona, e responde SQL.** Teste contra `127.0.0.1:8010`:
+
+```
+prompt  : "Tabela objects(origem, tipo, coletado_em). Quantos objetos por origem?"
+resposta: "SELECT COUNT(*) FROM objects WHERE type = 'origem'"
+finish  : stop     (1,4 s)
+```
+
+Resposta **sintaticamente válida e semanticamente errada** — `type` em vez de
+`tipo`, e a agregação sumiu. É a justificativa concreta do ADR-014: o executor
+valida e o usuário vê o SQL. Sem isso, o chat responderia "0 objetos" com
+aparência de sucesso.
+
+**2. O modelo é pequeno demais para tarefa confiável, e a GPU já está tomada.**
+
+| medido | valor |
+|---|---|
+| VRAM total | 4096 MiB |
+| ocupado pelo `vllm-study` | 3568 MiB |
+| livre | ~500 MiB |
+| modelo | Qwen2.5-**0.5B** |
+
+Um modelo de 0,5B erra `tipo` por `type`. Subir de tamanho não cabe: o teto de
+4 GB já está comprometido por um container de outro projeto.
+
+**Consequência prática — a resposta ao §10 item 6 fica evidente.** O chat
+**precisa** funcionar sem LLM como modo primário, e não por preferência de
+projeto: com 500 MiB livres e um modelo de 0,5B que erra nome de coluna, o LLM
+não é confiável como caminho principal. Ele é um acelerador a ser validado caso
+a caso, com o SQL sempre visível.
+
+**Decisão que fica aberta e é do usuário:** o `vllm-study` pertence a outro
+projeto. Derrubá-lo é decisão dele, não minha. Enquanto estiver de pé, o módulo
+de chat pode **reusar** aquele endpoint (`:8010`) em vez de subir um segundo
+vLLM que não caberia — mas então o lake depende de um serviço que ele não gerencia.
