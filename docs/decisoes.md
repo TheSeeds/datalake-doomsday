@@ -538,3 +538,81 @@ a caso, com o SQL sempre visível.
 projeto. Derrubá-lo é decisão dele, não minha. Enquanto estiver de pé, o módulo
 de chat pode **reusar** aquele endpoint (`:8010`) em vez de subir um segundo
 vLLM que não caberia — mas então o lake depende de um serviço que ele não gerencia.
+
+---
+
+## ADR-016 — A tela é um cliente via MCP, nunca dona do host
+
+**Data:** 2026-11-18 · **Status:** aceito · **Substitui:** o `chat-api` previsto na ADR-014
+
+### Contexto
+
+A ADR-014 decidiu que a interface principal é **conversar com os dados**. Isso
+deixou em aberto *quem* conversa: um `chat-api` próprio com LLM, ou uma tela
+pronta.
+
+O Hermes Agent (Nous Research, MIT) é um **runtime de agente**, não um chatbot:
+tem memória persistente, gateway de mensagens (Telegram, Discord, Slack,
+WhatsApp, Signal), cron em linguagem natural e **MCP nativo com
+`tools.include`/`tools.exclude`**. Reescrever isso seria refazer o que existe e
+manter em sincronia uma tela que não é o produto.
+
+O risco oposto é pior: um runtime de agente com `terminal` e `file` habilitados
+é **um administrador da máquina**, com acesso ao shell do usuário. Aceitar isso
+significa que "conversar com os dados" vira "qualquer coisa que o modelo decidir",
+e o lake perde a fronteira que a ADR-011 (papéis separados) construiu.
+
+### Decisão
+
+O Hermes é **cliente por MCP**, e a superfície dele é restrita.
+
+```
+Hermes Agent (tela) → MCP (stdio) → lakecore.mcp → credencial read-only → PostgreSQL
+```
+
+**Quatro ferramentas, nenhuma escreve:** `lake_esquema`, `lake_buscar`,
+`lake_sql`, `lake_estado`. O `lake_sql` reusa o executor da 5.1.
+
+**Ferramentas de host desabilitadas por decisão, não por padrão:**
+`terminal`, `file`, `code_execution`, `browser`, `computer_use`, `web`,
+`image_gen`, `tts`, `delegation`. O `tools.include` do MCP é lista branca
+explícita — ferramenta nova não aparece sem alguém decidir.
+
+### Por que `lake_esquema` existe
+
+Não é conveniência. Foi **medido**: o `Qwen2.5-0.5B` local devolveu
+`WHERE type = 'origem'` para uma pergunta sobre `objects(origem, tipo)`. E num
+teste de alucinação com o schema real, de 4 modelos baratos, um recusou 3/3,
+outro 2/3 e outro **1/3** — os outros devolveram string vazia em vez de admitir
+que a coluna não existe. Uma ferramenta que entrega o schema real ataca a causa;
+aumentar o prompt de sistema ataca o sintoma.
+
+### Alternativas rejeitadas
+
+**`chat-api` próprio.** Reescreveria sessão, memória, streaming e interface —
+tudo fora do domínio do projeto. O valor está no catálogo, não em ter mais um chat.
+
+**Hermes com `terminal` habilitado.** Mais poder, e mata a separação: o modelo
+passaria a ser quem decide o que fazer com o host. O teste que sustenta a recusa:
+pedi em português, com "tenho certeza do que estou pedindo", para apagar todos
+os objetos — recusou, e as 11 linhas continuaram lá.
+
+**`hermes-webui` de terceiros (19,5k★).** Reimplementa a camada de tela. O
+`hermes webapp` oficial serve o **mesmo** renderer do Desktop, no mesmo gateway,
+com as mesmas sessões: uma peça a menos para divergir.
+
+### Consequências
+
+- A tela pode cair sem derrubar ingestão, backup ou catálogo.
+- A defesa nº 4 (credencial read-only) passou a existir e é a única cuja
+  garantia não depende do parsing estar certo — provado chamando o banco direto,
+  contornando o executor: `permission denied for table objects`.
+- O acoplamento novo é o protocolo MCP, que é aberto: trocar a tela por outra
+  que fale MCP não exige mudar o servidor.
+- **Dívida aceita:** o `lakecore.mcp` roda no host, como subprocesso da tela. Na
+  instalação final ele vai para dentro do cluster, ao lado do Postgres.
+
+### O que isto NÃO resolve
+
+O chat consulta o OLTP direto. Com acervo grande isso deixa de servir — o export
+Parquet (5.2) continua no plano por isso.
