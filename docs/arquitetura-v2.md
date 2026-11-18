@@ -1,6 +1,12 @@
 # Arquitetura v2 — datalake-doomsday
 
 > **Status:** proposta de arquitetura final. Nada foi construído ainda.
+> **Última revisão:** 2026-11-18.
+>
+> **Execução:** o andamento por onda, com o que já está pronto, fica em
+> [`datalake-doomsday-env › docs/plano-atividades.md`](https://github.com/TheSeeds/datalake-doomsday-env/blob/main/docs/plano-atividades.md).
+> Este documento descreve o **alvo**, não o estado. Onde os dois divergem,
+> o plano tem razão.
 > **Substitui:** o modelo de 3 VMs com Vagrant+libvirt descrito em
 > `arquitetura.md`, `mvp.md`, `iac.md`, `infraestrutura-local.md` e `planodeiac.md`.
 > Esses documentos permanecem como registro histórico até a migração ser validada.

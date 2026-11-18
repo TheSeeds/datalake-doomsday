@@ -11,6 +11,13 @@ substitui o anterior, nunca edição do texto antigo.
 Este arquivo vive no repositório de **conceito**. O que é operacional
 (`plano-atividades.md`, charts, código) vive em `datalake-doomsday-env`.
 
+**Estado de execução** (o que já está pronto, onda por onda) não se registra
+aqui — fica em
+[`datalake-doomsday-env › docs/plano-atividades.md`](https://github.com/TheSeeds/datalake-doomsday-env/blob/main/docs/plano-atividades.md).
+ADR registra **decisão**, com a alternativa rejeitada; o plano registra
+**andamento**, com a prova executável. Misturar os dois faz um ADR virar
+diário e perder a função.
+
 | ADR | Título | Status |
 |---|---|---|
 | [001](#adr-001) | microk8s como orquestrador único | aceita |
